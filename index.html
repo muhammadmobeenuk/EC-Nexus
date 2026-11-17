@@ -1,1 +1,65 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#6550a4"><meta name="description" content="Epilepsy Care Nexus — your seizure journal, medication routine, and care team in one place."><title>EC Nexus · Your care, connected</title><link rel="stylesheet" href="/src/styles.css"></head><body><div id="app"></div><div id="toast" role="status"></div><script type="module" src="/src/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#23785B" />
+    <title>Epilepsy Care · Prototype</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="demo">
+      INTERACTIVE PROTOTYPE
+      <span>Fictional data · No medical or emergency service</span>
+    </div>
+    <div class="shell">
+      <aside>
+        <a href="#home" class="brand"
+          ><span class="brandmark">ec</span
+          ><span
+            >epilepsy care<small>A little clarity. Every day.</small></span
+          ></a
+        ><label class="role-label" for="role">EXPLORE AS</label
+        ><select id="role" aria-label="Explore as">
+          <option>Patient</option>
+          <option>Caregiver</option>
+          <option>Clinician</option>
+        </select>
+        <nav id="sideNav"></nav>
+        <div class="aside-foot">
+          VISION PROTOTYPE · 0.2
+          <p>Made for understanding.<br />Designed around you.</p>
+          <a href="#guide">Explore the prototype →</a>
+        </div>
+      </aside>
+      <div class="workspace">
+        <header>
+          <span id="breadcrumb">Your space</span>
+          <div class="header-right">
+            <span class="synthetic">SYNTHETIC PROFILE</span
+            ><span class="avatar">AL</span>
+          </div>
+        </header>
+        <main id="main" tabindex="-1"></main>
+        <footer>
+          Concept only. No detection, diagnosis, live sharing or
+          notifications.<br />Demo changes last for this page session. Please do
+          not enter personal information.
+        </footer>
+      </div>
+    </div>
+    <nav class="bottom" id="bottomNav" aria-label="Mobile navigation"></nav>
+    <div id="toast" role="status"></div>
+    <dialog id="sampleDialog" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">A clear confirmation</h2>
+      <p>
+        This is a component specimen. No clinical or privacy action will occur.
+      </p>
+      <button class="btn primary" data-action="close-dialog">
+        Close example
+      </button>
+    </dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
