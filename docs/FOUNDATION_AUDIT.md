@@ -60,3 +60,9 @@ During development, tests exposed a duplicate import (fixed) and a test-harness 
 - Some supporting concepts (for example optional symptom detail and side-effect confirmations) remain shallow simulations rather than full data models. Direct-linking a check-in without a session can still display the original concept wording; guarded actions cannot create or mutate a missing recorder.
 - There is no backend security boundary, persistence, clinical validation, or full accessibility claim. The archived app still has its original localStorage limitations if explicitly run separately.
 - Recommended next task: obtain a functioning browser preview and complete the documented cross-theme, narrow-layout, native-dialog, and keyboard regression pass before changing product functionality.
+
+## Browser regression follow-up — 17 November 2026
+
+Verified the current feature branch and PR head at `dcf8703` with a clean working tree. Reproduced the managed preview failure using `sites-preview start /workspace/EC-P`: the launcher invoked `vite --host 0.0.0.0 --host 127.0.0.1 --port 4173 --strictPort`, then Node returned `listen EPERM: operation not permitted 127.0.0.1:4173`. Follow-up status was stopped. Environment readiness reports running/connected, but does not diagnose or resolve this bind denial.
+
+[Browser regression report](BROWSER_REGRESSION.md) records the exact failure, environment evidence, required provider/runtime repair, and each requested check as BLOCKED with intended viewports and steps. No browser was launched, no application regression was verified, and no visual/native-dialog/accessibility PASS is claimed. The existing automated suite, build, foundation verification, and whitespace checks were rerun independently; application code and tests were unchanged. No security changes, alternative server, merge, or deployment occurred.
