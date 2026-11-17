@@ -40,3 +40,15 @@ This is a personal tracking prototype, not medical advice or an emergency servic
 - `src/styles.css`: responsive styles
 - `server.js`: local development server
 - `build.js`: static build
+
+## Preserved vision prototype v0.2
+
+The parallel vision prototype is preserved in `prototypes/vision-v02/`, including its patient, caregiver, clinician, and design-system previews. See [its documentation](docs/vision-v02.md).
+
+Run it separately with:
+
+```sh
+python -m http.server 8080 --directory prototypes/vision-v02
+```
+
+The Nexus app remains the default Node development app and static build. The two prototypes are independent.
