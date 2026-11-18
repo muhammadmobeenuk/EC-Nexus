@@ -142,3 +142,9 @@ All rows in the browser matrix remain **BLOCKED** on 18 November: no browser, no
 The following were independently rerun successfully on 18 November, before this documentation-only update: `npm test` (one passing test-file container), `node tests/foundation.test.js` (21 passed, 0 failed, 0 skipped), `npm run build`, `node scripts/verify-foundation.mjs`, and `git diff --check`. Working/staged whitespace checks were also run on the documentation update. Automated test success does not satisfy any browser matrix row.
 
 Physical Android/iOS devices, screen readers, switch input, 200% text scaling, native dialog/keyboard accessibility, all cross-theme viewport measurements, and full accessibility/clinical validation remain outstanding. No application code, test expectations, clinical boundary, design token, hosting manifest, OS/network configuration, or security control changed. Only this report and the foundation audit were updated.
+
+### Shared desktop check at `762da96`
+
+On 18 November, the on-demand shared desktop answered `cua.getState()` and listed Chrome with zero tabs. Immediately afterwards, `sites-preview start /workspace/EC-P` exited 1 with the same Vite command and loopback EPERM recorded in E1. `sites-preview status` returned `Sites preview stopped`. The desktop inventory confirms that the browser control service responded. The launcher failed before providing a URL to open in Chrome.
+
+All 17 browser checks remain **BLOCKED**. There were zero application pages opened, zero measured viewports and zero screenshots. No new port-occupancy or provider diagnostic evidence identified the specific denial. The 21 Node/jsdom tests, production build and foundation verifier passed again on this revision.
