@@ -1,19 +1,236 @@
-const key = 'ec-nexus-v1';
-const today = () => new Date().toLocaleDateString('en-CA');
-const seed = {seizures:[],doses:{},checkins:{},contacts:[{name:'Your neurologist',role:'Neurology · Add your care contact',phone:''},{name:'Your support person',role:'Family or caregiver · Add a trusted contact',phone:''}]};
-let data;
-try {data = JSON.parse(localStorage.getItem(key)) || structuredClone(seed);} catch {data = structuredClone(seed);}
-let page = 'Overview';
-const icons = {Overview:'◫','Seizure journal':'⌁',Medications:'✚','Care team':'♧'};
-const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const save = () => {try {localStorage.setItem(key,JSON.stringify(data));} catch {toast('Storage is unavailable. Changes may be lost when you close this tab.');}};
-function toast(t){document.querySelector('#toast').textContent=t;setTimeout(()=>document.querySelector('#toast').textContent='',4000);}
-const dateLabel = d => new Date(d+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
-function journal(){return `<section class="card"><div class="section-top"><div><span class="eyebrow">YOUR PERSONAL RECORD</span><h2>Seizure journal</h2></div><button class="primary" data-action="log">＋ Log a seizure</button></div>${data.seizures.length ? `<div class="entries">${[...data.seizures].sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`<article class="entry"><span class="entry-icon">⌁</span><div><h3>${esc(s.type)}</h3><p>${dateLabel(s.date)} · ${esc(s.duration)} seconds</p>${s.notes?`<p>${esc(s.notes)}</p>`:''}</div><button class="quiet" data-delete="${s.id}" aria-label="Delete seizure entry">Delete</button></article>`).join('')}</div>` : `<div class="empty"><span>⌁</span><h3>A little detail can make a difference.</h3><p>Record an event, how long it lasted, and anything you noticed.<br>Your journal starts with your first entry.</p></div>`}</section>`;}
-function meds(){const done=data.doses[today()]||[];return `<section class="card"><div class="section-top"><div><span class="eyebrow">BUILD A STEADY ROUTINE</span><h2>Today's medications</h2></div><span class="pill">Sample schedule</span></div><p class="muted">Demo entries only. Follow the prescription and schedule from your clinician.</p>${['Morning medication','Evening medication'].map((m,i)=>`<div class="med"><div class="med-icon">✚</div><div><h3>${m}</h3><p>${i?'8:00 PM':'8:00 AM'} · Sample reminder</p></div><button class="${done.includes(i)?'taken':'outline'}" data-dose="${i}" aria-pressed="${done.includes(i)}">${done.includes(i)?'✓ Marked taken':'Mark as taken'}</button></div>`).join('')}</section>`;}
-function contacts(){return `<section class="card"><div class="section-top"><div><span class="eyebrow">BETTER TOGETHER</span><h2>Your care circle</h2></div><button class="outline" data-action="contact">＋ Add contact</button></div><div class="contacts">${data.contacts.map(c=>`<article><div class="avatar">${esc(c.name.charAt(0))}</div><h3>${esc(c.name)}</h3><p>${esc(c.role)}</p>${c.phone?`<p>${esc(c.phone)}</p>`:'<span class="pill">Not configured</span>'}</article>`).join('')}</div></section>`;}
-function overview(){const check=data.checkins[today()];return `<section class="welcome"><div><span class="eyebrow">A LITTLE SUPPORT, EVERY DAY</span><h2>Your care.<br><em>Connected.</em></h2><p>A clearer picture of your health starts with the everyday.<br>Let's take it one step at a time.</p><button class="primary" data-action="log">＋ Log a seizure</button><button class="text-button" data-page="Seizure journal">View your journal ↗</button></div><div class="orbit" aria-hidden="true"><div class="ring r1"></div><div class="ring r2"></div><div class="orbit-core">✳</div><span class="float f1">♡ &nbsp; Here for you</span><span class="float f2">✧ &nbsp; One day at a time</span><i class="dot d1"></i><i class="dot d2"></i></div></section><div class="stats"><article><span class="stat-icon lavender">⌁</span><p>Events recorded</p><strong>${data.seizures.length}</strong><small>In your personal journal</small></article><article><span class="stat-icon peach">✚</span><p>Today's routine</p><strong>${(data.doses[today()]||[]).length}<span> / 2</span></strong><small>Sample reminders marked taken</small></article><article><span class="stat-icon green">♡</span><p>Daily check-in</p><strong>${check?esc(check):'A fresh start'}</strong><small>${check?'Thank you for checking in':'Make a moment for yourself'}</small></article></div><div class="two-col">${meds()}<section class="card checkin"><span class="eyebrow">PAUSE. BREATHE. CHECK IN.</span><h2>How are you feeling?</h2><p>Your wellbeing is part of the bigger picture.</p><div class="moods">${[['☀','Good'],['◒','Okay'],['☁','Low']].map(([i,m])=>`<button data-mood="${m}" class="${check===m?'selected':''}" aria-pressed="${check===m}"><span>${i}</span>${m}</button>`).join('')}</div><div class="gentle">✧ &nbsp; Every day looks different. That's okay.</div></section></div><section class="bottom-note"><span>♧</span><div><h3>You don't have to navigate this alone.</h3><p>Keep the people who support you close, all in one place.</p></div><button class="text-button" data-page="Care team">Meet your care circle ↗</button></section>`;}
-function render(){document.querySelector('#app').innerHTML=`<aside><a class="brand" href="#" aria-label="EC Nexus home"><span class="brandmark">✳</span><span>EC Nexus<small>EPILEPSY CARE NEXUS</small></span></a><div class="workspace-label">YOUR SPACE</div><nav>${Object.entries(icons).map(([p,i])=>`<button data-page="${p}" class="${p===page?'active':''}"><span>${i}</span>${p}${p===page?'<b>•</b>':''}</button>`).join('')}</nav><div class="sidebar-note"><span>♡</span><h3>Care that stays with you.</h3><p>Small steps.<br>Meaningful progress.</p></div><div class="profile"><div class="avatar">Y</div><div>Your personal space<small>Local demo account</small></div></div></aside><main><header><div class="breadcrumb">Your space <span>/</span> <b>${page}</b></div><div class="header-right"><span class="demo-dot"></span> Local demo <button class="outline small" data-action="export">Export journal ↗</button></div></header><div class="content"><div class="page-title"><div><h1>${page==='Overview'?'A little clarity. A little calm.':page}</h1><p>${page==='Overview'?'Welcome to your everyday care companion.':'Your care information, together in one place.'}</p></div><span class="date">${new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</span></div>${page==='Overview'?overview():page==='Seizure journal'?journal():page==='Medications'?meds():contacts()}<footer><span>✳ EC Nexus · Connecting care. Supporting life.</span><span>Demo · Saved on this browser only</span></footer><p class="disclaimer">A personal tracking tool, not medical advice or an emergency service. Follow your care plan and contact local emergency services when urgent help is needed.</p></div></main><dialog id="modal"></dialog>`;}
-function modal(kind){const d=document.querySelector('#modal');d.innerHTML=`<form><div class="section-top"><h2>${kind==='log'?'Log a seizure':'Add a care contact'}</h2><button type="button" class="quiet" data-action="close" aria-label="Close dialog">✕</button></div>${kind==='log'?`<label>Date<input name="date" type="date" value="${today()}" max="${today()}" required></label><label>Seizure type<select name="type"><option>Unknown / unsure</option><option>Focal seizure</option><option>Generalized seizure</option><option>Absence seizure</option><option>Other</option></select></label><label>Duration in seconds<input name="duration" type="number" min="1" max="86400" required placeholder="e.g. 60"></label><label>Notes <span>(optional)</span><textarea name="notes" maxlength="2000" placeholder="What did you notice before or after?"></textarea></label>`:`<label>Name<input name="name" maxlength="100" required></label><label>Role<input name="role" maxlength="100" placeholder="e.g. Neurologist" required></label><label>Phone <span>(optional)</span><input name="phone" type="tel" maxlength="50"></label>`}<p class="muted">Saved only in this browser. Use demo information on shared devices.</p><button class="primary" type="submit">${kind==='log'?'Save entry':'Save contact'}</button></form>`;d.querySelector('form').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));if(kind==='log')data.seizures.push({...v,id:crypto.randomUUID()});else data.contacts.push(v);save();d.close();render();toast(kind==='log'?'Journal entry saved':'Contact added');};d.showModal();}
-document.addEventListener('click',e=>{const b=e.target.closest('button,a.brand');if(!b)return;if(b.dataset.page||b.matches('a.brand')){e.preventDefault();page=b.dataset.page||'Overview';render();return;}if(b.dataset.action==='log'||b.dataset.action==='contact')modal(b.dataset.action);if(b.dataset.action==='close')document.querySelector('#modal').close();if(b.dataset.dose!==undefined){const i=Number(b.dataset.dose),a=data.doses[today()]||[];data.doses[today()]=a.includes(i)?a.filter(x=>x!==i):[...a,i];save();render();}if(b.dataset.mood){data.checkins[today()]=b.dataset.mood;save();render();toast('Check-in saved');}if(b.dataset.delete){data.seizures=data.seizures.filter(s=>s.id!==b.dataset.delete);save();render();toast('Entry deleted');}if(b.dataset.action==='export'){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),seizures:data.seizures},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ec-nexus-journal.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Journal exported');}});
-render();
+import { createHashRouter } from "./router.js";
+import { createSession, entriesOnDay } from "./domain/session.js";
+import { routeBoundary, canPerformAction } from "./domain/permissions.js";
+import { formatElapsed } from "./domain/recorder.js";
+import { createScreens } from "./screens/index.js";
+import { ico, btn, link, note, heading } from "./ui/components.js";
+import { dispatchAction } from "./actions.js";
+/** Mount one isolated page session; dispose listeners/timers for tests or teardown. */
+export function mountApp(
+  document,
+  window,
+  { state = createSession(), now = Date.now } = {},
+) {
+  const $ = (s) => document.querySelector(s);
+  const { routes, reference } = createScreens(state, { now });
+  let toastTimer;
+  function toast(text) {
+    $("#toast").textContent = text;
+    $("#toast").style.display = "block";
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(
+      () => ($("#toast").style.display = "none"),
+      5500,
+    );
+  }
+  function go(route) {
+    router.go(route);
+  }
+  function render(focus = false) {
+    state.current = router.current();
+    const current = state.current;
+    const items = [
+      ["home", "Overview"],
+      ["diary", "Episode diary"],
+      ["record", "Record an episode"],
+      ["medication", "Medication"],
+      ["plan", "Action plan"],
+      ["reports", "Reports"],
+      ["privacy", "Privacy & access"],
+      ["more", "Explore more"],
+      ["design", 'Design system <span class="pill">0.2</span>'],
+    ];
+    const nav = ([id, label]) =>
+      `<a href="#${id}" ${current === id ? 'class="active" aria-current="page"' : ""}>${ico(id)}${label}</a>`;
+    $("#sideNav").innerHTML = items.map(nav).join("");
+    $("#bottomNav").innerHTML = [
+      ["home", "Home"],
+      ["diary", "Diary"],
+      ["record", "Record"],
+      ["medication", "Medication"],
+      [
+        state.navigationCandidate === "profile" ? "profile" : "more",
+        state.navigationCandidate === "profile" ? "Profile" : "More",
+      ],
+    ]
+      .map(nav)
+      .join("");
+    $("#breadcrumb").textContent =
+      `${state.role} space / ${current.replaceAll("-", " ")}`;
+    const boundary = routeBoundary(state);
+    let html;
+    if (boundary === "patient") html = reference.patientPicker();
+    else if (boundary === "revoked")
+      html =
+        heading(
+          "EXAMPLE ACCESS REVOKED",
+          "Shared care is unavailable.",
+          "No patient details are available in this caregiver preview.",
+        ) + link("Review scope", "privacy");
+    else if (boundary === "scope")
+      html =
+        heading(
+          "EXAMPLE PERMISSIONS",
+          "Outside your shared scope.",
+          "This caregiver preview is limited to assisted recording, diary review and recovery.",
+        ) + link("View example permissions", "privacy");
+    else if (boundary === "clinician")
+      html =
+        heading(
+          "READ-ONLY CLINICIAN PREVIEW",
+          "Report access only.",
+          "Patient account controls and diary mutations are outside this example scope.",
+        ) + link("Open report", "reports");
+    else if (boundary === "owner")
+      html =
+        heading(
+          "RECORDING CONTEXT",
+          "Another demo role started this recorder.",
+          "Switch back to " +
+            state.record.ownerRole +
+            " to continue. The original activation and author are retained.",
+        ) + link("Return to overview", "home");
+    else if (state.role === "Caregiver" && current === "privacy")
+      html =
+        heading(
+          "CAREGIVER PERMISSIONS",
+          "Know your access.",
+          "Fictional scope only; not a settled authorization policy.",
+        ) +
+        `<section class="card"><h2>Alex Lane</h2><span class="pill ${state.revoked ? "amber" : ""}">${state.revoked ? "Revoked in demo" : "Active in demo"}</span><p>Permitted preview: assisted recording, shared diary and recovery follow-up.</p><p>Medication changes, deletion, export and sharing controls are reserved for the patient preview.</p>${link("Choose patient", "patients")}${note("Switch to Patient to review or revoke this example grant.")}</section>`;
+    else html = (routes[current] || routes.fallback)();
+    if (!boundary && current === "more")
+      html += `<section class="card"><h2>Design & review</h2><div class="viewlist">${link("Design system v0.2", "design")}${link("Accessibility evidence", "evidence")}${link("Full screen map", "screen-map")}${link("Profile concept", "profile")}${state.role === "Caregiver" ? link("Choose shared patient", "patients") : ""}</div></section>`;
+    if (
+      current === "home" &&
+      state.role === "Caregiver" &&
+      state.selectedPatient &&
+      !state.revoked
+    )
+      html =
+        `<div class="context-strip"><span>Supporting <b>Alex Lane</b> · fictional adult</span>${link("Change", "patients")}</div>` +
+        html;
+    if (state.record && !["record", "check", "saved"].includes(current))
+      html =
+        `<div class="context-strip"><span>Demo recorder: <b>${state.record.state}</b> · clinical status unknown</span>${link("Return", "record")}</div>` +
+        html;
+    if (!boundary && current === "record" && !state.record)
+      html += `<div class="recordbox">${link("View sample action plan", "plan")}${link("Compare interaction research", "evidence")}</div>`;
+    $("#main").innerHTML = html;
+    $("#main")
+      .querySelectorAll("[data-action]")
+      .forEach((b) => {
+        if (
+          ![
+            "select-alex",
+            "nav-more",
+            "nav-profile",
+            "sample-normal",
+            "sample-dialog",
+            "close-dialog",
+          ].includes(b.dataset.action) &&
+          !canPerformAction(state, b.dataset.action)
+        ) {
+          b.disabled = true;
+          b.title = "Unavailable in this demo context";
+        }
+      });
+    if (focus) {
+      $("#main").focus();
+      window.scrollTo(0, 0);
+    }
+  }
+  const ui = { document, render, go, toast, now };
+  function click(e) {
+    const skip = e.target.closest(".skip");
+    if (skip) {
+      e.preventDefault();
+      $("#main").focus();
+      return;
+    }
+    const ev = e.target.closest("[data-event]");
+    if (ev) {
+      if (routeBoundary(state, "detail")) return;
+      const entry = state.entries.find((x) => x.id === ev.dataset.event);
+      if (entry) {
+        state.selected = entry.id;
+        go("detail");
+      }
+      return;
+    }
+    const day = e.target.closest("[data-day]");
+    if (day) {
+      if (routeBoundary(state, "calendar")) return;
+      const entries = entriesOnDay(state, day.dataset.day);
+      $("#dayResult").innerHTML = entries.length
+        ? entries
+            .map(
+              (entry) =>
+                `Example event on ${day.dataset.day} November. <button class="btn" data-event="${entry.id}">Review event →</button>`,
+            )
+            .join("")
+        : "No fictional records on this date.";
+      return;
+    }
+    const b = e.target.closest("[data-action]");
+    if (!b || b.disabled) return;
+    const a = b.dataset.action;
+    if (a === "select-alex") {
+      if (state.role !== "Caregiver") return;
+      state.selectedPatient = true;
+      go("home");
+      return;
+    }
+    if (a === "nav-more" || a === "nav-profile") {
+      state.navigationCandidate = a === "nav-more" ? "more" : "profile";
+      render();
+      return;
+    }
+    if (a === "sample-normal") {
+      toast("Component interaction example. No record changed.");
+      return;
+    }
+    if (a === "sample-dialog") {
+      $("#sampleDialog").showModal();
+      return;
+    }
+    if (a === "close-dialog") {
+      $("#sampleDialog").close();
+      return;
+    }
+    dispatchAction(state, a, ui, b);
+  }
+  function change(e) {
+    if (e.target.id !== "role") return;
+    if (!["Patient", "Caregiver", "Clinician"].includes(e.target.value)) return;
+    state.role = e.target.value;
+    state.selectedPatient = false;
+    go("home");
+    render(true);
+  }
+  const router = createHashRouter(window, render);
+  document.addEventListener("click", click);
+  document.addEventListener("change", change);
+  const timer = window.setInterval(() => {
+    if ($("#timer"))
+      $("#timer").textContent = formatElapsed(state.record, now());
+  }, 1000);
+  $(".header-right").insertAdjacentHTML(
+    "afterbegin",
+    `<a href="#plan" class="plan-shortcut">${ico("plan")}<span>Action plan</span></a>`,
+  );
+  render();
+  return {
+    state,
+    render,
+    go,
+    dispatch: (a, b) => dispatchAction(state, a, ui, b),
+    dispose() {
+      document.removeEventListener("click", click);
+      document.removeEventListener("change", change);
+      router.dispose();
+      window.clearInterval(timer);
+      window.clearTimeout(toastTimer);
+    },
+  };
+}
